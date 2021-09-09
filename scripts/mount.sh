@@ -9,6 +9,7 @@
 
 # Make sure we have a valid device name
 DEVNAME=${DEVNAME:=$1}
+echo "device name: $DEVNAME" >> /usr/src/mount.log
 if [[ -z $DEVNAME ]]; then
   echo "Invalid device name: $DEVNAME" >> /usr/src/mount.log
   exit 1
@@ -20,13 +21,19 @@ ID_FS_TYPE=${ID_FS_TYPE:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_TYPE/{ 
 ID_FS_UUID_ENC=${ID_FS_UUID_ENC:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_UUID_ENC/{ print $2 }')}
 ID_FS_LABEL_ENC=${ID_FS_LABEL_ENC:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_LABEL_ENC/{ print $2 }')}
 
-if [[ -z $ID_BUS || -z $ID_FS_TYPE || -z $ID_FS_UUID_ENC || -z $ID_FS_LABEL_ENC ]]; then
+echo "ID_BUS: $ID_BUS" >> /usr/src/mount.log
+echo "ID_FS_TYPE: $ID_FS_TYPE" >> /usr/src/mount.log
+echo "ID_FS_UUID_ENC: $ID_FS_UUID_ENC" >> /usr/src/mount.log
+echo "ID_FS_LABEL_ENC: $ID_FS_LABEL_ENC" >> /usr/src/mount.log
+
+
+if [[ -z $ID_BUS || -z $ID_FS_TYPE || -z $ID_FS_UUID_ENC ]]; then
   echo "Could not get device information: $DEVNAME" >> /usr/src/mount.log
   exit 1
 fi
 
 # Construct the mount point path
-MOUNT_POINT=/mnt/storage-$ID_BUS-$ID_FS_LABEL_ENC-$ID_FS_UUID_ENC
+MOUNT_POINT=/mnt/storage-$ID_BUS-$ID_FS_UUID_ENC
 
 # Bail if file system is not supported by the kernel
 if ! grep -qw $ID_FS_TYPE /proc/filesystems; then
@@ -42,3 +49,12 @@ else
     mkdir -p $MOUNT_POINT
     mount -t $ID_FS_TYPE -o rw $DEVNAME $MOUNT_POINT
 fi
+
+echo $(ls $MOUNT_POINT) >> /usr/src/mount.log
+
+filelist=$(find $MOUNT_POINT -maxdepth 1 -name "*log*" -print)
+for f in $filelist; do
+	serial=`awk -F',' 'NR==2 {print $1}' $f`
+	echo "Found file: ${f} with serial: $serial" >> /usr/src/mount.log
+	# curl -F "file=@$f" http://192.168.0.103:80/upload/$serial; 	
+done;
