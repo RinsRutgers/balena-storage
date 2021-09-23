@@ -56,5 +56,5 @@ filelist=$(find $MOUNT_POINT -maxdepth 1 -name "*log*" -print)
 for f in $filelist; do
   serial=`awk -F',' 'NR==2 {print $1}' $f`
   echo "Found log file: ${f} with serial: $serial" >> /usr/src/mount.log
-  curl -v -X POST -F sensorID=$serial -F file=@$f https://staging.hbj.hu.nl/userUploads/ >> /usr/src/mount.log 2>&1
+  curl -v -i -X POST -F sensorID=$serial -F file=@$f "https://staging.hbj.hu.nl/userUploads/" >> /usr/src/mount.log 2>&1
 done;
