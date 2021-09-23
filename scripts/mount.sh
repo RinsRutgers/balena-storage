@@ -54,8 +54,7 @@ echo $(ls $MOUNT_POINT) >> /usr/src/mount.log
 
 filelist=$(find $MOUNT_POINT -maxdepth 1 -name "*log*" -print)
 for f in $filelist; do
-	serial=`awk -F',' 'NR==2 {print $1}' $f`
-	echo "Found file: ${f} with serial: $serial" >> /usr/src/mount.log
-	# curl -F "file=@$f" http://192.168.0.103:80/upload/$serial;
-  curl -X POST -F sensorID=$serial -F file=@${f} https://staging.hbj.hu.nl/userUploads/
+  serial=`awk -F',' 'NR==2 {print $1}' $f`
+  echo "Found log file: ${f} with serial: $serial" >> /usr/src/mount.log
+  curl -v -X POST -F sensorID=$serial -F file=@$f https://staging.hbj.hu.nl/userUploads/ >> /usr/src/mount.log 2>&1
 done;
