@@ -1,1 +1,1 @@
-FROM balenablocks/wifi-connect:%%BALENA_ARCH%%
+FROM balenablocks/wifi-connect:%%BALENA_ARCH%% 
