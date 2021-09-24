@@ -20,13 +20,13 @@ ID_FS_TYPE=${ID_FS_TYPE:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_TYPE/{ 
 ID_FS_UUID_ENC=${ID_FS_UUID_ENC:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_UUID_ENC/{ print $2 }')}
 ID_FS_LABEL_ENC=${ID_FS_LABEL_ENC:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_LABEL_ENC/{ print $2 }')}
 
-if [[ -z $ID_BUS || -z $ID_FS_TYPE || -z $ID_FS_UUID_ENC || -z $ID_FS_LABEL_ENC ]]; then
-  echo "Could not get device information: $DEVNAME" >> /usr/src/unmount.log
+if [[ -z $ID_BUS || -z $ID_FS_TYPE || -z $ID_FS_UUID_ENC ]]; then
+  echo "Could not get device information: $DEVNAME" >> /usr/src/mount.log
   exit 1
 fi
 
 # Construct the mount point path
-MOUNT_POINT=/mnt/storage-$ID_BUS-$ID_FS_LABEL_ENC-$ID_FS_UUID_ENC
+MOUNT_POINT=/mnt/storage-$ID_BUS-$ID_FS_LABEL_ENC$ID_FS_UUID_ENC
 
 # Unmount device
 if findmnt -rno SOURCE,TARGET $DEVNAME >/dev/null; then
