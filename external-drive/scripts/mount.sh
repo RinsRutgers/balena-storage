@@ -52,9 +52,9 @@ fi
 
 echo $(ls $MOUNT_POINT) >> /usr/src/mount.log
 
-filelist=$(find $MOUNT_POINT -maxdepth 1 -name "*log*" -print)
-for f in $filelist do
-  serial=`awk -F',' 'NR==2 {print $1}' $f`
-  echo "Found log file: ${f} with serial: $serial" >> /usr/src/mount.log
-  /usr/src/scripts/upload.sh $serial ${f}
-done
+# filelist=$(find /mnt/ -maxdepth 2 -name "*log*" -print)
+# for f in $filelist do
+#   serial=`awk -F',' 'NR==2 {print $1}' $f`
+#   echo "Found log file: ${f} with serial: $serial" >> /usr/src/mount.log
+#   /usr/src/scripts/upload.sh $serial ${f}
+# done
